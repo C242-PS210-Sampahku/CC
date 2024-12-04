@@ -17,15 +17,14 @@ const registerUser = async (req, res, next) => {
     }
     const { email, password, username, name, gender, noHp } = req.body;
 
+    let firebaseUser = null;
     try {
         let photoUrl = null;
-
-        // Jika ada file diunggah, gunakan fungsi uploadToGCS
         if (req.file) {
             photoUrl = await uploadToGCS(req.file.buffer, req.file.mimetype, req.file.originalname, 'profile-images');
         }
 
-        const userRecord = await auth.createUser({
+        firebaseUser = await auth.createUser({
             email,
             password,
             displayName: name,
@@ -34,13 +33,13 @@ const registerUser = async (req, res, next) => {
         // Simpan data pengguna di database
         const newUser = await prisma.user.create({
             data: {
-                user_id: userRecord.uid || "sdjfkseefk",
+                user_id: firebaseUser.uid,
                 username,
                 gender,
                 name,
                 email,
                 no_hp: noHp,
-                img_url: photoUrl, // URL foto profil (jika ada)
+                img_url: photoUrl,
             },
         });
 
@@ -50,10 +49,10 @@ const registerUser = async (req, res, next) => {
             data: newUser,
         });
     } catch (error) {
-        error.statusCode = 400;
-        error.status = false;
-        error.message = 'register failed';
-        error.errors = error;
+        if(firebaseUser){
+            await auth.deleteUser(firebaseUser.uid);
+        }
+        error.message = error.message || 'register failed';
         next(error);
     }
 };
