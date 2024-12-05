@@ -68,18 +68,6 @@ const userValidator = checkSchema({
         matches: {
             options: /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])[a-zA-Z0-9]+$/,
             errorMessage: 'Password must contain at least one uppercase letter, one lowercase letter, and one number, without symbols',
-        },
-        minLowercase: {
-            options: {
-                min: 1
-            },
-            errorMessage: 'Password must contain at least one lowercase'
-        },
-        minUppercase: {
-            options: {
-                min: 1
-            },
-            errorMessage: 'Password must contain at least one uppercase'
         }
     },
 });

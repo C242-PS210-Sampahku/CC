@@ -5,6 +5,7 @@ const prisma = new PrismaClient();
 const formatReminderData = (reminders, userId) => {
     return reminders.map((reminder) => ({
         ...reminder,
+        day: reminder.day.toLowerCase(),
         user_id: userId,
     }));
 };
@@ -33,6 +34,7 @@ const addReminder = async (req, res, next) => {
         });
     }
     catch (error) {
+        error.status = false
         next(error);
     }
 }
@@ -41,7 +43,10 @@ const getAllReminders = async (req, res, next) => {
     const userId = req.user.user_id;
     try {
         const data = await prisma.reminder.findMany({
-            where: {user_id: userId}
+            where: {
+                user_id: userId,
+                is_actived: true,
+            }
         });
         console.log(data)
         if(!data.length){
@@ -56,33 +61,37 @@ const getAllReminders = async (req, res, next) => {
             data: data
         })
     }catch (error) {
+        error.status = false
         next(error);
     }
 }
 
 const updateReminder = async (req, res, next) => {
-    const reminderId = req.params.id;
-    const { day, time, is_actived } = req.body;
+    const userId = req.user.user_id;
+    const reminders = req.body;
     try {
-        const existingReminder = await prisma.reminder.findUnique({
+        const existingReminder = await prisma.reminder.findMany({
             where: {
-                reminder_id: parseInt(reminderId),
+                user_id: userId,
+                is_actived: true
             },
         });
 
-        if (!existingReminder) {
-            return res.status(404).json({ message: "Reminder not found" });
+        if (!existingReminder.length) {
+            return res.status(404).json({ message: "user not have reminders" });
         }
-        const updatedReminder = await prisma.reminder.update({
+        const changeToInactive = await prisma.reminder.updateMany({
             where: {
-                reminder_id: parseInt(reminderId),
+                user_id: userId,
+                is_actived: true
             },
             data: {
-                day: day.toLowerCase() || existingReminder.day,
-                time: time || existingReminder.time,
-                is_actived: is_actived !== undefined ? is_actived : existingReminder.is_actived,
-                updated_at: new Date(),
+                is_actived: false
             },
+        });
+        const dataReminders = formatReminderData(reminders, userId);
+        const updatedReminder = await prisma.reminder.createMany({
+            data: dataReminders,
         });
 
         res.status(200).json({
@@ -93,7 +102,6 @@ const updateReminder = async (req, res, next) => {
     } catch (error) {
         error.statusCode = 500;
         error.status=false;
-        error.errors = error
         next(error);
     }
 }
@@ -124,7 +132,6 @@ const deleteReminder = async (req, res, next) => {
     }catch (error) {
         error.statusCode = 500;
         error.status=false;
-        error.errors = error
         next(error);
     }
 }

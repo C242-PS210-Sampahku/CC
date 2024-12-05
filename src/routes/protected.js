@@ -26,7 +26,7 @@ router.delete('/predicts/:id', authFirebase, deletePrediction);
 
 router.post("/reminders", authFirebase, addReminder);
 router.get("/reminders", authFirebase, getAllReminders);
-router.put('/reminders/:id', authFirebase, updateReminder);
+router.put('/reminders', authFirebase, updateReminder);
 router.delete('/reminders/:id', authFirebase, deleteReminder);
 
 export default router;
