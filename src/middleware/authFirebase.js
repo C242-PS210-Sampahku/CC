@@ -2,7 +2,7 @@ import { auth } from "../configs/firebase.js";
 
 export const authFirebase = async (req, res, next) => {
   const authHeader = req.headers.authorization;
-  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+  if (!authHeader || !authHeader.startsWith("Bearer " )) {
     // return res.status(401).json({ message: "Need auth Token" });
     const err = new Error("Need auth Token");
     err.status = false;

@@ -5,11 +5,14 @@ const auth = getAuth(app);
 
 async function login(req, res, next) {
     const { email, password } = req.body;
+    console.log(req.body);
 
     try {
         // Validate input
         if (!email || !password) {
-            return res.status(400).json({ error: 'Email and password are required' });
+            return res.status(400).json({
+                staus: false,
+                message: 'Email and password are required' });
         }
 
         // Attempt login

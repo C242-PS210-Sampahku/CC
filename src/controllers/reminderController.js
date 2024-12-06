@@ -107,24 +107,27 @@ const updateReminder = async (req, res, next) => {
 }
 
 const deleteReminder = async (req, res, next) => {
-    const reminderId = req.params.id;
+    const userId = req.user.user_id
     try {
-        const existingReminder = await prisma.reminder.findUnique({
+        const existingReminder = await prisma.reminder.findMany({
             where: {
-                reminder_id: parseInt(reminderId),
+                user_id: userId,
+                is_actived: true
             },
         });
-        if (!existingReminder) {
-            return res.status(404).json({
-                success: false,
-                message: "Reminder not found",
-            });
+
+        if (!existingReminder.length) {
+            return res.status(404).json({ message: "user not have reminders" });
         }
-        const deleteData = await prisma.reminder.deleteMany({
+        const changeToInactive = await prisma.reminder.updateMany({
             where: {
-                reminder_id: parseInt(reminderId),
-            }
-        })
+                user_id: userId,
+                is_actived: true
+            },
+            data: {
+                is_actived: false
+            },
+        });
         res.status(200).json({
             success: true,
             message: "success delete reminder",
