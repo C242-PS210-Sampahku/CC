@@ -1,3 +1,5 @@
+import multer from "multer";
+
 const errorHandler = (err, req, res, next) => {
     // Default values for status and message
     const statusCode = err.statusCode || 500;
@@ -11,22 +13,15 @@ const errorHandler = (err, req, res, next) => {
             message: 'Internal server error: Database connection issue. Please check the configuration.',
         });
     }
-    // if(err.name === 'FirebaseAuthError'){
-    //     message =
-    // }
-    // switch (err.code) {
-    //     case 'auth/invalid-email':
-    //         return res.status(400).json({ success: false, message: 'Invalid email format.' });
-    //     case 'auth/user-not-found':
-    //         return res.status(404).json({ success: false, message: 'User not found.' });
-    //     case 'auth/wrong-password':
-    //         return res.status(401).json({ success: false, message: 'Incorrect password.' });
-    //     case 'auth/email-already-exists':
-    //         return res.status(401).json({ success: false, message: 'The email address is already in use by another account.' });
-    //     default:
-    //         return res.status(500).json({ success: false, message: 'Internal server error.' });
-    // }
-
+    if (err instanceof multer.MulterError) {
+        // Error spesifik dari Multer (misalnya file size terlalu besar)
+        if (err.code === 'LIMIT_FILE_SIZE') {
+            return res.status(400).json({
+                status: false,
+                message: 'File size exceeds the 7MB limit. Please upload a smaller file.',
+            });
+        }
+    }
     // Handle circular structure in errors
     let errorDetails = err;
     try {
