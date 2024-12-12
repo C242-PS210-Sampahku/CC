@@ -2,7 +2,7 @@ import express from "express";
 import { authFirebase } from "../middleware/authFirebase.js";
 import {predictWaste, getPredictionHistory, getPrediction, deletePrediction} from "../controllers/predictController.js";
 import {addReminder, deleteReminder, getAllReminders, updateReminder} from "../controllers/reminderController.js";
-import {deleteUser, getUserById, updateUser} from "../controllers/userController.js";
+import {deleteUser, getUserById, loginWithFirebase, updateUser} from "../controllers/userController.js";
 import upload from "../middleware/multerMiddleware.js";
 
 const router = express.Router();
@@ -29,4 +29,5 @@ router.get("/reminders", authFirebase, getAllReminders);
 router.put('/reminders', authFirebase, updateReminder);
 router.delete('/reminders', authFirebase, deleteReminder);
 
+router.post("/login-firebase", authFirebase, loginWithFirebase);
 export default router;

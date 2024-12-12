@@ -40,9 +40,6 @@ const userValidator = checkSchema({
     },
   },
   gender: {
-    notEmpty: {
-      errorMessage: "Gender is required",
-    },
     isIn: {
       options: [["male", "female"]],
       errorMessage: "Gender must be either male, female",

@@ -2,7 +2,6 @@ import { auth } from "../configs/firebase.js";
 import { PrismaClient } from "@prisma/client";
 import { validationResult } from "express-validator";
 import { uploadToGCS } from "../utils/uploadToCloudStorage.js";
-import { Schema as errors } from "@firebase/vertexai";
 
 const prisma = new PrismaClient();
 
@@ -34,8 +33,6 @@ const registerUser = async (req, res, next) => {
       password,
       displayName: name,
     });
-
-    // Simpan data pengguna di database
     const newUser = await prisma.user.create({
       data: {
         user_id: firebaseUser.uid,
@@ -123,21 +120,69 @@ const deleteUser = async (req, res) => {
 const getUserById = async (req, res, next) => {
   const userId = req.user.user_id;
   try {
+    // Cari user berdasarkan ID
     const findUserById = await prisma.user.findUnique({
       where: { user_id: userId },
     });
+
+    // Jika user tidak ditemukan, lempar error 404
+    if (!findUserById) {
+      const error = new Error("User not found");
+      error.statusCode = 404;
+      error.status = false;
+      throw error;
+    }
+    console.log(findUserById);
+
+    // Jika user ditemukan, kembalikan respons dengan data user
     res.status(200).json({
       success: true,
       message: "User found",
       data: findUserById,
     });
   } catch (error) {
-    error.statusCode = 400;
-    error.status = false;
-    error.message = "User getting user with id " + userId + " does not exist";
-    error.errors = errors;
-    next(error);
+    // Penanganan error
+    if (!error.statusCode) {
+      error.statusCode = 500; // Error default jika tidak ada statusCode
+    }
+    next(error); // Kirim error ke middleware berikutnya
   }
 };
 
-export { registerUser, updateUser, deleteUser, getUserById };
+const loginWithFirebase = async (req, res, next) => {
+  const user = req.user;
+
+  try {
+    // Check if user exists
+    let cekUser = await prisma.user.findUnique({
+      where: { user_id: user.uid },
+    });
+
+    if (!cekUser) {
+      // Create user if not exists
+      cekUser = await prisma.user.create({
+        data: {
+          user_id: user.uid,
+          username: user.name,
+          name: user.name,
+          email: user.email,
+        },
+      });
+    }
+
+    // Respond with success
+    res.status(200).json({
+      success: true,
+      message: "Login successful",
+      data: cekUser,
+    });
+  } catch (err) {
+    // Handle errors
+    res.status(500).json({
+      success: false,
+      message: err.message || "Login failed",
+    });
+  }
+};
+
+export { registerUser, updateUser, deleteUser, getUserById, loginWithFirebase};

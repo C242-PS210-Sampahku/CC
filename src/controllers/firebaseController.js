@@ -5,8 +5,6 @@ const auth = getAuth(app);
 
 async function login(req, res, next) {
     const { email, password } = req.body;
-    console.log(req.body);
-
     try {
         // Validate input
         if (!email || !password) {
@@ -18,10 +16,6 @@ async function login(req, res, next) {
         // Attempt login
         const userCredential = await signInWithEmailAndPassword(auth, email, password);
         const token = await userCredential.user.getIdToken();
-
-        console.log('Login successful.');
-
-        // Return token and user details (excluding sensitive information)
         res.status(200).json({
             success: true,
             message: 'Login successful.',
