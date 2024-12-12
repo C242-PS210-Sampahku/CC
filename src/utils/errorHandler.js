@@ -17,7 +17,7 @@ const errorHandler = (err, req, res, next) => {
         // Error spesifik dari Multer (misalnya file size terlalu besar)
         if (err.code === 'LIMIT_FILE_SIZE') {
             return res.status(400).json({
-                status: false,
+                success: false,
                 message: 'File size exceeds the 7MB limit. Please upload a smaller file.',
             });
         }
@@ -34,7 +34,7 @@ const errorHandler = (err, req, res, next) => {
     // Respond with error structure
     console.log(err);
     res.status(statusCode).json({
-        status,
+        success: status,
         message,
     });
 };
