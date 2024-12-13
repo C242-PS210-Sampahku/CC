@@ -1,0 +1,622 @@
+openapi: 3.0.0
+info:
+  title: sampahku-api
+  version: 1.0.0
+servers:
+  - url: http://localhost:3333
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+security:
+  - bearerAuth: []
+tags:
+  - name: auth
+  - name: predicts
+  - name: reminders
+  - name: users
+paths:
+  /api/v1/register:
+    post:
+      tags:
+        - auth
+      summary: register
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                email: test@example.com
+                password: PassWod123
+                username: tebstuser
+                name: Test User
+                gender: male
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /api/v1/login:
+    post:
+      tags:
+        - auth
+      summary: login
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                email: test@example.com
+                password: PassWod123
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /api/v1/predicts:
+    post:
+      tags:
+        - predicts
+      summary: Predict
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                predictImage:
+                  type: string
+                  format: binary
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: OK
+          headers:
+            X-Powered-By:
+              schema:
+                type: string
+                example: Express
+            Content-Type:
+              schema:
+                type: string
+                example: application/json; charset=utf-8
+            Content-Length:
+              schema:
+                type: integer
+                example: '350'
+            ETag:
+              schema:
+                type: string
+                example: W/"15e-iitPvOLmWovyVDmV7ErrEQSJ2WI"
+            Date:
+              schema:
+                type: string
+                example: Fri, 06 Dec 2024 05:32:46 GMT
+            Connection:
+              schema:
+                type: string
+                example: keep-alive
+            Keep-Alive:
+              schema:
+                type: string
+                example: timeout=5
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                success: true
+                message: Prediction successfully
+                data:
+                  prediction:
+                    category: clothes
+                    confidence: 49.910400390625
+                  tips: >-
+                    Punya baju lama? Jadikan isian bantal DIY untuk mempercantik
+                    rumahmu, mudah dan seru!
+                  result_id: 18
+                  photo_url: >-
+                    https://storage.googleapis.com/sampahku-storage/profile-images/profile-2024-12-06T05:32:44.113Z.png
+    get:
+      tags:
+        - predicts
+      summary: getAllHistoryPredictions
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: OK
+          headers:
+            X-Powered-By:
+              schema:
+                type: string
+                example: Express
+            Content-Type:
+              schema:
+                type: string
+                example: application/json; charset=utf-8
+            Content-Length:
+              schema:
+                type: integer
+                example: '869'
+            ETag:
+              schema:
+                type: string
+                example: W/"365-moFht163jD/Tv2WuF/v6sEGucBI"
+            Date:
+              schema:
+                type: string
+                example: Fri, 06 Dec 2024 05:30:16 GMT
+            Connection:
+              schema:
+                type: string
+                example: keep-alive
+            Keep-Alive:
+              schema:
+                type: string
+                example: timeout=5
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                success: true
+                message: successful retrieve history prediction
+                current_page: 1
+                total_data: 2
+                total_page: 1
+                data:
+                  - history_id: 17
+                    result_id: 17
+                    user_id: Cwr4LHJTKjdn8cp2uzYL8iN5PDc2
+                    result:
+                      result_id: 17
+                      img_url: >-
+                        https://storage.googleapis.com/sampahku-storage/profile-images/profile-2024-12-06T05:29:22.795Z.png
+                      predict:
+                        category: Clothes
+                        suggestion: >-
+                          Punya pakaian yang sudah jarang dipakai? Yuk,
+                          sumbangkan ke yayasan amal dan jadikan mereka
+                          bermanfaat bagi yang membutuhkan!
+                  - history_id: 16
+                    result_id: 16
+                    user_id: Cwr4LHJTKjdn8cp2uzYL8iN5PDc2
+                    result:
+                      result_id: 16
+                      img_url: >-
+                        https://storage.googleapis.com/sampahku-storage/profile-images/profile-2024-12-06T05:27:21.474Z.png
+                      predict:
+                        category: Clothes
+                        suggestion: >-
+                          Suka belanja pakaian? Yuk, bijak memilih! Beli
+                          secukupnya dan kurangi limbah tekstil dari sekarang.
+  /api/v1/predicts/{prediction_id}:
+    get:
+      tags:
+        - predicts
+      summary: getPredictionDetails
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: prediction_id
+          in: path
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: OK
+          headers:
+            X-Powered-By:
+              schema:
+                type: string
+                example: Express
+            Content-Type:
+              schema:
+                type: string
+                example: application/json; charset=utf-8
+            Content-Length:
+              schema:
+                type: integer
+                example: '529'
+            ETag:
+              schema:
+                type: string
+                example: W/"211-+BLnu8nQm/Nbi6HjRrIVRfPkqaI"
+            Date:
+              schema:
+                type: string
+                example: Fri, 06 Dec 2024 05:33:30 GMT
+            Connection:
+              schema:
+                type: string
+                example: keep-alive
+            Keep-Alive:
+              schema:
+                type: string
+                example: timeout=5
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                success: true
+                message: 'successful get predict history '
+                data:
+                  result_id: 18
+                  user_id: Cwr4LHJTKjdn8cp2uzYL8iN5PDc2
+                  img_url: >-
+                    https://storage.googleapis.com/sampahku-storage/profile-images/profile-2024-12-06T05:32:44.113Z.png
+                  created_at: '2024-12-06T05:32:46.000Z'
+                  predict_id: 39
+                  history:
+                    - history_id: 18
+                      result_id: 18
+                      user_id: Cwr4LHJTKjdn8cp2uzYL8iN5PDc2
+                  predict:
+                    predict_id: 39
+                    category: Clothes
+                    suggestion: >-
+                      Punya baju lama? Jadikan isian bantal DIY untuk
+                      mempercantik rumahmu, mudah dan seru!
+    delete:
+      tags:
+        - predicts
+      summary: delete prediction
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: prediction_id
+          in: path
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: OK
+          headers:
+            X-Powered-By:
+              schema:
+                type: string
+                example: Express
+            Content-Type:
+              schema:
+                type: string
+                example: application/json; charset=utf-8
+            Content-Length:
+              schema:
+                type: integer
+                example: '88'
+            ETag:
+              schema:
+                type: string
+                example: W/"58-Kcr9mwEsqvS39jOPRtVtwG1lPIo"
+            Date:
+              schema:
+                type: string
+                example: Fri, 06 Dec 2024 05:34:34 GMT
+            Connection:
+              schema:
+                type: string
+                example: keep-alive
+            Keep-Alive:
+              schema:
+                type: string
+                example: timeout=5
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                success: true
+                message: Prediction history and related results deleted successfully
+  /api/v1/reminders:
+    post:
+      tags:
+        - reminders
+      summary: addReminders
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                - day: Monday
+                  time: '08:00'
+                - day: Wednesday
+                  time: '10:00'
+                - day: Friday
+                  time: '06:00'
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+    get:
+      tags:
+        - reminders
+      summary: getReminders
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+    put:
+      tags:
+        - reminders
+      summary: updateReminders
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              example:
+                - day: Friday
+                  time: '08:30'
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: OK
+          headers:
+            X-Powered-By:
+              schema:
+                type: string
+                example: Express
+            Content-Type:
+              schema:
+                type: string
+                example: application/json; charset=utf-8
+            Content-Length:
+              schema:
+                type: integer
+                example: '77'
+            ETag:
+              schema:
+                type: string
+                example: W/"4d-HWoQNm29qMuIKekoB5z1TU6d2HI"
+            Date:
+              schema:
+                type: string
+                example: Fri, 06 Dec 2024 05:38:14 GMT
+            Connection:
+              schema:
+                type: string
+                example: keep-alive
+            Keep-Alive:
+              schema:
+                type: string
+                example: timeout=5
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                success: true
+                message: Reminder updated successfully
+                data:
+                  count: 2
+    delete:
+      tags:
+        - reminders
+      summary: deleteReminders
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: OK
+          headers:
+            X-Powered-By:
+              schema:
+                type: string
+                example: Express
+            Content-Type:
+              schema:
+                type: string
+                example: application/json; charset=utf-8
+            Content-Length:
+              schema:
+                type: integer
+                example: '52'
+            ETag:
+              schema:
+                type: string
+                example: W/"34-tLCcCmucHQLqu1SheBs/vacDEVU"
+            Date:
+              schema:
+                type: string
+                example: Fri, 06 Dec 2024 05:40:20 GMT
+            Connection:
+              schema:
+                type: string
+                example: keep-alive
+            Keep-Alive:
+              schema:
+                type: string
+                example: timeout=5
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                success: true
+                message: success delete reminder
+  /api/v1/users:
+    get:
+      tags:
+        - users
+      summary: getUserbyId
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: OK
+          headers:
+            X-Powered-By:
+              schema:
+                type: string
+                example: Express
+            Content-Type:
+              schema:
+                type: string
+                example: application/json; charset=utf-8
+            Content-Length:
+              schema:
+                type: integer
+                example: '388'
+            ETag:
+              schema:
+                type: string
+                example: W/"184-+VuEiqd20Uoe0vJoHYwXFDw0JXc"
+            Date:
+              schema:
+                type: string
+                example: Fri, 06 Dec 2024 05:56:32 GMT
+            Connection:
+              schema:
+                type: string
+                example: keep-alive
+            Keep-Alive:
+              schema:
+                type: string
+                example: timeout=5
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                status: true
+                message: User found
+                data:
+                  user_id: Cwr4LHJTKjdn8cp2uzYL8iN5PDc2
+                  name: Test User
+                  gender: male
+                  username: tebstuser
+                  email: test@example.com
+                  no_hp: '087776543210'
+                  img_url: >-
+                    https://storage.googleapis.com/sampahku-storage/profile-images/profile-2024-12-06T05:53:30.236Z.jpg
+                  created_at: '2024-12-05T21:31:57.000Z'
+                  updated_at: '2024-12-06T05:53:31.000Z'
+    put:
+      tags:
+        - users
+      summary: updateUserById
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                photoProfile:
+                  type: string
+                  format: binary
+                no_hp:
+                  type: integer
+                  example: '08123456789012'
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: OK
+          headers:
+            X-Powered-By:
+              schema:
+                type: string
+                example: Express
+            Content-Type:
+              schema:
+                type: string
+                example: application/json; charset=utf-8
+            Content-Length:
+              schema:
+                type: integer
+                example: '408'
+            ETag:
+              schema:
+                type: string
+                example: W/"198-aiFIvgp24u/iaXTtFSqcGhoq7lM"
+            Date:
+              schema:
+                type: string
+                example: Fri, 06 Dec 2024 05:53:30 GMT
+            Connection:
+              schema:
+                type: string
+                example: keep-alive
+            Keep-Alive:
+              schema:
+                type: string
+                example: timeout=5
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                status: success
+                message: User updated successfully
+                data:
+                  user_id: Cwr4LHJTKjdn8cp2uzYL8iN5PDc2
+                  name: Test User
+                  gender: male
+                  username: tebstuser
+                  email: test@example.com
+                  no_hp: '087776543210'
+                  img_url: >-
+                    https://storage.googleapis.com/sampahku-storage/profile-images/profile-2024-12-06T05:53:30.236Z.jpg
+                  created_at: '2024-12-05T21:31:57.000Z'
+                  updated_at: '2024-12-06T05:53:31.000Z'
+    delete:
+      tags:
+        - users
+      summary: deleteUserById
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: OK
+          headers:
+            X-Powered-By:
+              schema:
+                type: string
+                example: Express
+            Content-Type:
+              schema:
+                type: string
+                example: application/json; charset=utf-8
+            Content-Length:
+              schema:
+                type: integer
+                example: '58'
+            ETag:
+              schema:
+                type: string
+                example: W/"3a-WIRP18LrlipyzL/lm3MsmTsH7cI"
+            Date:
+              schema:
+                type: string
+                example: Fri, 06 Dec 2024 05:56:42 GMT
+            Connection:
+              schema:
+                type: string
+                example: keep-alive
+            Keep-Alive:
+              schema:
+                type: string
+                example: timeout=5
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                status: success
+                message: User deleted successfully
